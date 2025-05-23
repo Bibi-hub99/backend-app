@@ -22,7 +22,7 @@ const uri = `mongodb+srv://${process.env.MONGO_USERNAME_ADMIN}:${process.env.MON
 
 const clientOptions = { serverApi: { version: '1', strict: true, deprecationErrors: true } };
 
-/*async function run() {
+async function run() {
   try {
     // Create a Mongoose client with a MongoClientOptions object to set the Stable API version
     await mongoose.connect(uri, clientOptions);
@@ -36,16 +36,7 @@ const clientOptions = { serverApi: { version: '1', strict: true, deprecationErro
 
 async function ConnectDB(){
   run()
-}*/
-
-async function ConnectDB(){
-  try{
-    await mongoose.connect(process.env.MONGO_URL)
-    console.log('connected !')
-  }catch(err){
-    console.log(err)
-    process.exit(1)
-  }
 }
+
 
 module.exports = ConnectDB
