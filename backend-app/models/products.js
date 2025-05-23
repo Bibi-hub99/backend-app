@@ -75,6 +75,72 @@ productSchema.methods.findSimilarProducts = async function findSimilarProducts()
     }
 }
 
+productSchema.statics.findByCategory = async function findByCategory(category){
+    try{
+        const response = await this.find({
+            category:{
+                $eq:category
+            }
+        })
+        return response
+    }catch(err){
+        console.log(err)
+    }
+}
+
+productSchema.statics.querySearch = async function querySearch
+({searchTerm,
+minPriceStart,
+minPriceEnd,
+midPriceStart,
+midPriceEnd,
+highPriceStart,
+highPriceEnd,
+limit}){
+    
+    try{
+
+        const query = {}
+        const filters = []
+
+        if(searchTerm){
+            query.$text = {
+                $search:`\"${searchTerm}\"`
+            }
+        }
+
+        if(minPriceStart !== "undefined"){
+            filters.push({price:{$gte:Number(minPriceStart),$lte:Number(minPriceEnd)}})
+        }
+
+        if(midPriceStart !== "undefined"){
+            filters.push({price:{$gte:Number(midPriceStart),$lte:Number(midPriceEnd)}})
+        }
+
+        if(highPriceStart !== "undefined"){
+            filters.push({price:{$gte:parseFloat(highPriceStart),$lte:parseFloat(highPriceEnd)}})
+        }
+
+        if(filters.length > 0){
+            query.$or = filters
+        }
+
+        let queryBuilder = this.find(query)
+
+        if(limit){
+            queryBuilder = queryBuilder.limit(Number(limit))
+        }
+
+        console.log(filters)
+
+        return await queryBuilder
+
+    }catch(err){
+        console.log(err.message)
+    }
+
+}
+
 const ProductModel = mongoose.model('products',productSchema,'products')
 
 module.exports = ProductModel
