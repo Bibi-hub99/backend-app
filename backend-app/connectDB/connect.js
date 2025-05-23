@@ -34,7 +34,7 @@ async function run() {
 }
 
 async function ConnectDB(){
-  await run()
+  run()
 }
 
 module.exports = ConnectDB
