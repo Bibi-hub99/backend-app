@@ -1,3 +1,4 @@
+const { isUndefined } = require("@splidejs/splide/src/js/utils");
 const mongoose = require("../mongoose")
 
 const productSchema = new mongoose.Schema({
@@ -109,15 +110,16 @@ limit}){
             }
         }
 
-        if(minPriceStart !== "undefined"){
+
+        if(minPriceStart){
             filters.push({price:{$gte:Number(minPriceStart),$lte:Number(minPriceEnd)}})
         }
 
-        if(midPriceStart !== "undefined"){
+        if(midPriceStart){
             filters.push({price:{$gte:Number(midPriceStart),$lte:Number(midPriceEnd)}})
         }
 
-        if(highPriceStart !== "undefined"){
+        if(highPriceStart){
             filters.push({price:{$gte:parseFloat(highPriceStart),$lte:parseFloat(highPriceEnd)}})
         }
 
