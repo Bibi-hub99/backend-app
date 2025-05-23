@@ -16,5 +16,30 @@ const findSingleProduct = async(req,res)=>{
     res.status(200).json({success:true,meals:response,similarProducts:similar})
 }
 
+const getByCategory = async (req,res)=>{
+    try{
+        const {query,limit} = req.query
+        const response = await ProductModel.findByCategory(query)
+        res.status(200).json({success:true,meals:response})
+    }catch(err){
+        console.log(err)
+    }
+}
 
-module.exports = {findAllProducts,findSingleProduct}
+const querySearch = async(req,res)=>{
+    const {searchTerm,minPriceStart,minPriceEnd,midPriceStart,midPriceEnd,highPriceStart,highPriceEnd,limit} = req.query
+    try{
+        const response = await ProductModel.querySearch({
+            searchTerm,
+            minPriceStart,minPriceEnd,
+            midPriceStart,midPriceEnd,
+            highPriceStart,highPriceEnd,  
+            limit
+        })
+        res.status(200).json({success:true,meals:response})
+    }catch(err){
+        console.log(err)
+    }
+}
+
+module.exports = {findAllProducts,findSingleProduct,getByCategory,querySearch}
