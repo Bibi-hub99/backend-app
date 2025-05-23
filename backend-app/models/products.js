@@ -109,15 +109,15 @@ limit}){
             }
         }
 
-        if(minPriceStart !== "undefined"){
+        if(minPriceStart !== "undefined" || minPriceStart !== undefined){
             filters.push({price:{$gte:Number(minPriceStart),$lte:Number(minPriceEnd)}})
         }
 
-        if(midPriceStart !== "undefined"){
+        if(midPriceStart !== "undefined" || midPriceStart !== undefined){
             filters.push({price:{$gte:Number(midPriceStart),$lte:Number(midPriceEnd)}})
         }
 
-        if(highPriceStart !== "undefined"){
+        if(highPriceStart !== "undefined" || midPriceStart !== undefined){
             filters.push({price:{$gte:parseFloat(highPriceStart),$lte:parseFloat(highPriceEnd)}})
         }
 
