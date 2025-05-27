@@ -17,8 +17,8 @@ async function ConnectDB (){
 }*/
 
 
-const mongoose = require('mongoose');
-const uri = `mongodb+srv://${process.env.MONGO_USERNAME_ADMIN}:${process.env.MONGO_PASSWORD_ADMIN}@cluster0.mb1i07x.mongodb.net/food_shop?retryWrites=true&w=majority&appName=Cluster0`;
+const mongoose = require('../mongoose');
+const uri = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0.mb1i07x.mongodb.net/food_shop?retryWrites=true&w=majority&appName=Cluster0`;
 
 const clientOptions = { serverApi: { version: '1', strict: true, deprecationErrors: true } };
 
@@ -28,15 +28,15 @@ async function run() {
     await mongoose.connect(uri, clientOptions);
     await mongoose.connection.db.admin().command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    console.log()
   } finally {
     // Ensures that the client will close when you finish/error
+    //await mongoose.disconnect();
   }
 }
 
-
 async function ConnectDB(){
-  run()
+  run().catch(console.dir);
 }
-
 
 module.exports = ConnectDB

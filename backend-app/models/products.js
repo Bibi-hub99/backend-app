@@ -1,4 +1,3 @@
-const { isUndefined } = require("@splidejs/splide/src/js/utils");
 const mongoose = require("../mongoose")
 
 const productSchema = new mongoose.Schema({
@@ -25,10 +24,15 @@ const productSchema = new mongoose.Schema({
         minLength:1,
         maxLength:100,
     },
+    category:{
+        type:String,
+        required:true,
+        minLength:1,
+    },
     tags:[String],
     locations:[
         {
-            town:String
+            town:String,
         }
     ]
 })
@@ -36,6 +40,7 @@ const productSchema = new mongoose.Schema({
 productSchema.statics.findAllProducts = async function findAllProducts(){
     try{
         const response = await this.find({})
+        console.log(response)
         return response;
     }catch(err){
         console.log(err)
@@ -110,16 +115,15 @@ limit}){
             }
         }
 
-
-        if(minPriceStart){
+        if(minPriceStart !== "undefined" && minPriceStart !== undefined){
             filters.push({price:{$gte:Number(minPriceStart),$lte:Number(minPriceEnd)}})
         }
 
-        if(midPriceStart){
+        if(midPriceStart !== "undefined" && midPriceStart !== undefined){
             filters.push({price:{$gte:Number(midPriceStart),$lte:Number(midPriceEnd)}})
         }
 
-        if(highPriceStart){
+        if(highPriceStart !== "undefined" && highPriceEnd !== undefined){
             filters.push({price:{$gte:parseFloat(highPriceStart),$lte:parseFloat(highPriceEnd)}})
         }
 
@@ -133,7 +137,6 @@ limit}){
             queryBuilder = queryBuilder.limit(Number(limit))
         }
 
-        console.log(filters)
 
         return await queryBuilder
 
@@ -141,6 +144,50 @@ limit}){
         console.log(err.message)
     }
 
+}
+
+productSchema.statics.productUpdate = async function productUpdate({_id,name,imageURL,price,description,category,tags,locations}){
+
+    try{
+        await this.findByIdAndUpdate(_id,{
+            $set:{
+                name:name,
+                imageURL:imageURL,
+                price:parseFloat(price),
+                description:description,
+                category:category,
+                tags:tags,
+                locations:locations
+            }
+        })
+        const response = await this.find({})
+        return response
+    }catch(err){
+        console.log(err)
+    }
+
+}
+
+productSchema.statics.productAdd = async function productAdd({name,imageURL,price,description,category,tags,locations}){
+    try{
+
+        const newProduct = new this({
+            name,
+            imageURL,
+            price,
+            description,
+            category,
+            tags,
+            locations
+        })
+        
+        await newProduct.save()
+        const response = true
+        return response
+
+    }catch(err){
+        console.log(err)
+    }
 }
 
 const ProductModel = mongoose.model('products',productSchema,'products')
