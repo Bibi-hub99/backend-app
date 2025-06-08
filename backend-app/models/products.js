@@ -1,4 +1,5 @@
 const mongoose = require("../mongoose")
+const ProductData = require("./product-data")
 
 const productSchema = new mongoose.Schema({
     name:{
@@ -6,6 +7,7 @@ const productSchema = new mongoose.Schema({
         minLength:3,
         required:true,
         unique:true,
+        text:true
     },
     imageURL:{
         type:String,
@@ -23,6 +25,7 @@ const productSchema = new mongoose.Schema({
         required:true,
         minLength:1,
         maxLength:100,
+        text:true
     },
     category:{
         type:String,
@@ -34,13 +37,20 @@ const productSchema = new mongoose.Schema({
         {
             town:String,
         }
-    ]
+    ],
+    available:{
+        type:Number,
+        min:1,
+        max:100,
+        required:true,
+        default:20
+    }
 })
+
 
 productSchema.statics.findAllProducts = async function findAllProducts(){
     try{
         const response = await this.find({})
-        console.log(response)
         return response;
     }catch(err){
         console.log(err)
@@ -181,7 +191,11 @@ productSchema.statics.productAdd = async function productAdd({name,imageURL,pric
             locations
         })
         
-        await newProduct.save()
+        const newProductSave = await newProduct.save()
+        const newProductData = await ProductData.newProductData(newProductSave._id)
+        console.log(newProductSave)
+        console.log(newProductData)
+
         const response = true
         return response
 
@@ -190,6 +204,42 @@ productSchema.statics.productAdd = async function productAdd({name,imageURL,pric
     }
 }
 
-const ProductModel = mongoose.model('products',productSchema,'products')
+productSchema.statics.purchase = async function purchase({productID,quantity}){
+    try{
+        return await this.updateMany({
+            $and:[{
+                _id:{
+                    $eq:productID
+                }
+            },{
+                available:{
+                    $not:{
+                        $lt:quantity
+                    }
+                }
+            }]
+        },{$inc:{available:-Number(quantity)}})
+    }catch(err){
+        console.log(err)
+    }
+}
 
+productSchema.statics.validatePurchase = async function validatePurchase(items){
+    try{
+        return await this.bulkWrite(items)
+    }catch(err){
+        console.log(err)
+    }
+}
+
+productSchema.statics.purchaseResults = async function(productID){
+    try{
+        const response = await this.findById(productID,{available:1})
+        return response
+    }catch(err){
+        console.log(err)
+    }
+}
+
+const ProductModel = mongoose.model('products',productSchema,'products')
 module.exports = ProductModel
